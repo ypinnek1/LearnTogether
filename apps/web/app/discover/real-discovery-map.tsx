@@ -15,9 +15,11 @@ export function RealDiscoveryMap({ items, selectedSlug, onSelect, recenterKey }:
   const mapRef = useRef<import('maplibre-gl').Map | null>(null);
   const markersRef = useRef<import('maplibre-gl').Marker[]>([]);
   const [mapReady, setMapReady] = useState(false);
+  const [mapError, setMapError] = useState(false);
 
   useEffect(() => {
     let disposed = false;
+    setMapError(false);
     void import('maplibre-gl').then(({ default: maplibregl }) => {
       if (disposed || !container.current || mapRef.current) return;
       const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -28,6 +30,8 @@ export function RealDiscoveryMap({ items, selectedSlug, onSelect, recenterKey }:
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
       mapRef.current = map;
       setMapReady(true);
+    }).catch(() => {
+      if (!disposed) setMapError(true);
     });
     return () => {
       disposed = true;
@@ -68,5 +72,15 @@ export function RealDiscoveryMap({ items, selectedSlug, onSelect, recenterKey }:
     mapRef.current?.flyTo({ center, zoom: selected ? 14.5 : 13.5, essential: true });
   }, [items, mapReady, recenterKey, selectedSlug]);
 
-  return <div ref={container} className="discovery-map real-map" role="application" aria-label="Interactive map of nearby classes" />;
+  return (
+    <div className="discovery-map-frame">
+      <div ref={container} className="discovery-map real-map" role="application" aria-label="Interactive map of nearby classes" />
+      {mapError && (
+        <div className="map-unavailable" role="status">
+          <strong>Map preview unavailable</strong>
+          <span>The class location and distance are still shown below.</span>
+        </div>
+      )}
+    </div>
+  );
 }

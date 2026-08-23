@@ -111,7 +111,9 @@ export default function DiscoverPage() {
         {viewMode === 'List' && <section className="section-block results-section">
           <div className="section-heading">
             <div><span className="eyebrow coral">{activeFilter.toUpperCase()}</span><h2>{query ? 'Search results' : 'Popular near you'}</h2></div>
-            <button type="button" className="filter-link" aria-expanded={filtersOpen} onClick={() => setFiltersOpen((value) => !value)}>Filters <span>⌁</span></button>
+            <button type="button" className="filter-link" aria-expanded={filtersOpen} onClick={() => setFiltersOpen((value) => !value)}>
+              Filters <Icon className="filter-chevron" name="chevronDown" size={13} />
+            </button>
           </div>
           {filtersOpen && (
             <div className="quick-filters" role="region" aria-label="Quick filters">
